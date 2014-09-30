@@ -3,7 +3,6 @@
 library("Matrix")
 library("irlba")
 library("microbenchmark")
-library("MASS")
 
 GetCov <- function(p, m, max.corr = .5, sparse = T) {
   # Generate a covariance matrix with limited off-diagonal elements.
@@ -55,12 +54,19 @@ object.size(m.dense)
 #         is correct.  Generate a plot of the first row showing that adjacent columns
 #         are correlated with one another.
 
+# Get the Cholesky decomposition of the cov mat so we can generate the data matrix X
 A.sparse <- t(chol(m.sparse))
+
+# Generate X with desired covariance
 X <- as.matrix(t(A.sparse %*% matrix(rnorm(n*p), p, n)))
+
+# Task 2: Use scale() to center and scale the columns.
 X <- scale(X, center=TRUE, scale=TRUE)
 plot(cov(X, X), m.sparse); abline(0, 1)
 
-# Task 2: Use scale() to center and scale the columns.
+# Plot one realization of X - we can see the correlation structure
+plot(X[1,], type = 'l')
+
 # Task 3: Calculate the principal components using the four
 #         functions svd(), irlba(), eigen(), and irlba().
 #         With irlba(), just look at the top five.
