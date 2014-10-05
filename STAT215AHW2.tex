@@ -1,0 +1,101 @@
+\documentclass[10pt]{article} %
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{graphics}
+\usepackage{psfrag}
+\usepackage{amsmath,amssymb}
+\usepackage{enumerate}
+\usepackage{tikz}
+
+\setlength{\textwidth}{6.5in}
+\setlength{\textheight}{9in}
+
+\newcommand{\cP}{\mathcal{P}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+
+\title{STAT 215A HW 2}
+\author{Jonathan Fischer SID: 24962996}
+\date{October 7, 2014}
+\def\ci{\perp\!\!\!\perp}
+\def\A{\mathbf{A}}
+\def\B{\mathbf{B}}
+\def\D{\mathbf{D}}
+\def\H{\mathbf{H}}
+\def\I{\mathbf{I}}
+\def\J{\mathbf{J}}
+\def\z{\mathbf{z}}
+\def\zbar{\bar{\mathbf{z}}}
+\def\1{\mathbf{1}}
+\def\zmat{\mathbf{Z}}
+\def\x{\mathbf{x}}
+\def\X{\mathbf{X}}
+\def\Gammamat{\mathbf{\Gamma}}
+\def\Lambdamat{\mathbf{\Lambda}}
+
+
+
+\begin{document}
+
+
+\maketitle
+
+
+\section{Kernel Density Estimation}
+The fact that bias increases when variance decreases (and vice versa) as functions of the bandwith $h$ is known as the bias-variance tradeoff for histograms and kernel density estimates. The tradeoff tells us that there is no value of $h$ that minimizes both the point-wise bias and variance of our estimates simultaneously. Furthermore, it says that the cost of minimizing one of these quantities is to increase the other. Let's consider the qualitative effect of varying $h$ on the bias and variance. Small $h$ should give us a good local picture of the density, decreasing bias. However, this means that our estimates will be less robust since the kernel is more sensitive to individual data points, so variance increases; we get an undersmoothed estimate. Conversely, larger $h$ correspond to a kernel that incorporates data in a more global sense, dropping the variance. Unfortunately, this causes nearby points to have potentially excessive influence on our estimates and increases the bias. This can result in oversmoothing. As the number of sampled points increases, we should anticipate the variance to drop while the bias will be unaffected. This is because as we obtain more data, the proportion of points falling within an arbitrary bin will approach what is predicted by the true density. The kernel operations will then give values approaching those arising from applying the same kernel operations to the density itself. Hence our estimate will converge to some value, indicating decreasing variance. Evaluation of the kernel function introduces non-local effects according to the bandwith, biasing the estimator. These effects have no dependence on $n$ and thus will not dissipate as the sample size increases.
+
+We define our estimate and impose conditions on our kernel as follows, under the assumption that $\{ x_i \}_0^n$ are i.i.d.:
+\begin{equation} \hat{f}_{n,h}(x) = \frac{1}{n} \sum_{i=1}^n K_h(x_i-x), \end{equation}
+\begin{equation} K_h(t)=\frac{1}{h} K(\frac{t}{h}),  \end{equation}
+\begin{equation} \int K_h(t) dt =1,  \end{equation}
+\begin{equation} \int t K_h(t) dt =0.  \end{equation}
+
+The calculate the bias we must take the expectation of our estimate $\hat{f}_{n,h} (x)$:
+\[ E[\hat{f}_{n,h}(x)] = E[\frac{1}{n} \sum_{i=1}^n K_h(x_i-x)]=E[\frac{1}{nh} \sum_{i=1}^n K(\frac{x_i-x}{h})]. \] Fubini's thereom allows us to interchange the integration and summation. A change of variables with $\frac{x_i-x}{h} \rightarrow t$ combined with the i.i.d. assumption results in
+\[ = \frac{1}{nh} \sum_{i=1}^n E[K(\frac{x_i-x}{h})] = \frac{1}{nh} \sum_{i=1}^n \int K(\frac{x_i-x}{h}) f(x_i) dx_i = \frac{1}{n} \sum_{i=1}^n \int K(t) f(x+ht) dt = \int K(t) f(x+ht) dt. \]
+In the general case, this is the best we can do to express the bias. Representing $f(x+ht)$ as a Taylor series (when $f$ is nice enough to do so) elucidates the $h$-dependence of the bias. Using
+\[ f(x+ht) = \sum_{j=0}^\infty \frac{(ht)^j f^{(j)}(x)}{j!} \] we see that bias increases with $h$. For small $h$, we can get a cleaner form by dropping all terms of order greater than 2. This relaxes the differentiability constraints on $f$ by only requiring the existence of derivates through second order. Again applying Fubini's theorem, the expression becomes
+\[ \int K(t) f(x+ht) dt \approx f(x) \int K(t)dt + hf'(x) \int t K(t) dt + h^2 f''(x) \int t^2 K(t) dt. \] Applying (3) and (4) simplifies this to
+\[ f(x) + h^2 f''(x) \int t^2 K(t) dt. \] 
+To get the bias, we subtract $f(x)$ and see,  for small $h$, 
+\[ bias \approx h^2 f''(x) \int t^2 K(t) dt. \] If we think of $K(t)$ as a probability distribution on $t$, we can replace the integral with $\sigma^2_t$, the variance of $t$. The bias is then approximately $h^2 f''(x) \sigma^2_t$. While this change doesn't yield any new information about the effect of $h$, it agrees with our intuition that increased globality induces larger biases since $\sigma^2_t$ represents the spread of the kernel. 
+For all $h$, the term is 
+\[ bias = \int K(t)f(x+ht) dt. \]
+
+We can now conclude that small bandwiths give small biases and large bandwiths lead to large biases. As we posited earlier, there is no dependence on the number of samples. Interestingly to note, the curvature of the density $f$ at point $x$ appears in the bias term via $f''(x)$. As kernel density estimation produces a smoothed, or averaged-over picture of the density, it makes sense that the magnitude of the bias increases with the magnitude of the curvature since smoothing deletes this information.
+
+
+\section{Multidimensional Scaling}
+1. By definition, $a_{rs}=-\frac{1}{2}d_{rs}$. The matrix $\H = \I-n^{-1}\1\1'=\I-n^{-1}\J$ where $\J$ is the Hadamard identity matrix (all ones). Define $\B=\H\A\H$. If we have $\D$ Euclidean, $d_{rs}^2 = (\z_r - \z_s)'(\z_r - \z_s)$. We can thus compute the entries of $\A$. 
+
+\[\B = \H\A\H = (\I-n^{-1}\J)\A(\I-n^{-1}\J)=\A-n^{-1}\J\A-n^{-1}\A\J+n^{-2}\J\A\J. \] Consider $b_{rs}$, where $\B=(b_{rs})$. Then
+
+\[ b_{rs} = a_{rs}-\frac{1}{n} \sum_{v=1}^n a_{rv} - \frac{1}{n} \sum_{u=1}^n a_{us}+\frac{1}{n^2} \sum_{v=1}^n \sum_{u=1}^n a_{uv}. \] Inserting the expression for $a_{rs}$ yields
+\[ b_{rs} = (\z_r - \z_s)'(\z_r - \z_s) - \frac{1}{n} \sum_{v=1}^n (\z_r - \z_v)'(\z_r - \z_v) - \frac{1}{n} \sum_{u=1}^n (\z_u - \z_s)'(\z_u - \z_s)+\frac{1}{n^2} \sum_{v=1}^n \sum_{u=1}^n (\z_u - \z_v)'(\z_u - \z_v). \]
+We expand the products to obtain
+\[ b_{rs} = -\frac{1}{2}(\z_r'\z_r-\z_r'\z_s-\z_s'\z_r+\z_s'\z_s)+\frac{1}{2n}\sum_{v=1}^n(\z_r'\z_r-\z_r'\z_v-\z_v'\z_r+\z_v'\z_v)+\frac{1}{2n}\sum_{u=1}^n(\z_u'\z_u-\z_u'\z_s-\z_s'\z_u+\z_s'\z_s)\]\[-\frac{1}{2n^2}\sum_{u=1}^n \sum_{v=1}^n (\z_u'\z_u-\z_u'\z_v-\z_v'\z_u+\z_v'\z_v). \] Note that $\frac{1}{n}\sum_{u=1}^n \z_u'\z_s = \zbar '\z_s$. Making this substitution, cancelling like terms and using the general fact that $\mathbf{x}'\mathbf{y} = \mathbf{y}'\mathbf{x}$ for column vectors $\mathbf{x}$ and $\mathbf{y}$, simplifies the equation to
+\[ b_{rs} = \z_r'\z_s-\z_r'\zbar-\zbar '\z_s+\frac{1}{n} \sum_{v=1}^n \z_v'\z_v-\frac{1}{n^2} \sum_{u=1}^n \sum_{v=1}^n (\z_u'\z_u-\z_u'\z_v) \]
+\[ = \z_r'\z_s-\z_r'\zbar-\zbar '\z_s+\frac{1}{n} \sum_{v=1}^n \z_v'\z_v-\frac{1}{n} \sum_{u=1}^n \z_u'\z_u+\frac{1}{n^2} \sum_{u=1}^n \sum_{v=1}^n \z_u'\z_v. \] The fourth and fifth terms are equal since they are sums of the same thing ranging over all indices, and therefore cancel. The evaluate the double sum, we sum over each index separately, giving $\zbar ' \zbar$. The whole expression for $b_{rs}$ is now
+\[ b_{rs} = \z_r'\z_s-\z_r'\zbar-\zbar ' \z_s+\zbar ' \zbar = (\z_r-\zbar)'(\z_s-\zbar), \] as we have sought to show.
+
+Define a matrix $\zmat$ whose columns are the points $\z_1,...,\z_n$. Consider the matrix $\H \zmat \zmat ' \H = (\H \zmat) (\H \zmat)'$. This matrix must be positive semidefinite, and we show that it is equivalent to $\B$, making $\B$ PSD. The entry at position $(r,s)$ of the matrix $\zmat \zmat '$ is $\z_r \z_s' = \z_r' \z_s$. We have
+\[ \H \zmat \zmat ' \H = \zmat \zmat '-n^{-1}\J\zmat \zmat '-n^{-1}\zmat \zmat '\J+n^{-2}\J\zmat \zmat '\J. \] The matrix $\J$ has the effect of summing of the column (or row) depending on whether it is right or left mulitplied. With the $n^{-1}$ factor, this means we get $\zbar$ or $\zbar'$ multiplied by $\z_r'$ or $\z_s$, respectively. Then the entry at $(r,s)$ of $\H \zmat \zmat ' \H$ is 
+\[ \z_r' \z_s - \z_r ' \zbar-\zbar ' \z_s + \zbar ' \zbar = b_{rs}. \] Thus $\B = \H \zmat \zmat ' \H = (\H \zmat) (\H \zmat)'$, and it is PSD.
+
+2. We begin by showing that $\B$ is the inner product matrix of the given configuration. Our first step is to standardize the eigenvectors so that $\x_{(i)}'\x_{(i)}=1$. This is done by taking $\X \Lambdamat^{-1/2}$ for $\Lambdamat =$ diag($\lambda_1, ..., \lambda_p)$. Since $B$ is real and symmetric, we can diagonalize it as $\B = \Gammamat \Lambdamat \Gammamat'$ where $\Gammamat = \X \Lambdamat^{-1/2}$. Inserting this for $\Gammamat$ gives
+\[ B = \Gammamat \Lambdamat \Gammamat' = \X \Lambdamat^{-1/2} \Lambdamat [\X \Lambdamat^{-1/2}]' 
+= \X \Lambdamat^{-1/2} \Lambdamat \Lambdamat^{-1/2} \X' = \X\X' = \X'\X. \] This proves $\B$ is the inner product matrix with $b_{rs}=\x_r'\x_s.$
+
+To check that $\D$ is the interpoint distance matrix, we see
+\[ (\x_r-\x_s)'(\x_r-\x_s) = \x_r'\x_r-\x_r'\x_s-\x_s'\x_r+\x_s'\x_s = \x_r'\x_r-2\x_r'\x_s+\x_s'\x_s = b_{rr}-2b_{rs}+b_{ss}. \]
+From part 1, we have 
+\[ b_{rs} = a_{rs}-\frac{1}{n} \sum_{v=1}^n a_{rv} - \frac{1}{n} \sum_{u=1}^n a_{us}+\frac{1}{n^2} \sum_{v=1}^n \sum_{u=1}^n a_{uv}. \] Plugging this in and cancelling terms leads to
+\[ (\x_r-\x_s)'(\x_r-\x_s) = a_{rr}-2a_{rs}+a_{ss} = -2a_{rs}=d_{rs}^2 \] since $a_{ii}=0$. Thus $\D$ is the interpoint distance matrix for the given configuration.
+
+Finally, we verify the the center of gravity of $\X$ is the $\mathbf{0}$ vector. Consider $\B \1 = \H \A \H \1$. Since $\H = \I-n^{-1}\J$, $\H \1=\1-n^{-1}n\1=\mathbf{0}$. Then $\B \1 = \mathbf{0}$ and $\1$ is an eigenvector of $\B$ associated with eigenvalue $0$. Hence $\1$ is orthogonal to the eigenvectors $\x_{(i)}$, $i=1,...,p$. This is equivalent to
+\[\bar{\mathbf{x}}_i = \frac{1}{n}\sum_{j=1}^n x_{(i)j} = \frac{1}{n} \x_{(i)}'\1  = 0 .\] Thus $\bar{\mathbf{x}} = \mathbf{0}$.
+
+
+\end{document}
