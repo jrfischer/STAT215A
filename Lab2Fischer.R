@@ -7,6 +7,12 @@ library(dplyr)
 library(reshape2)
 library(gridExtra)
 library(animation)
+library(EMCluster)
+library(DPpackage)
+library(rgl)
+library(iplots)
+
+# Part 1: Redwood Data Smoothing
 
 # Load the cleaned data from previous lab folder
 setwd("/Users/jonathanfischer/Desktop/STAT215A/Lab 1")
@@ -106,28 +112,61 @@ loess.plot.degree.2
 dev.copy(png,'Humidity_Temperature_Loess_2.png')
 dev.off()
 
+# Part 2: Linguistic Data Analysis
 
-
-
-
-
+# Load question and response data. Look at questions
 lingData <- read.table('lingData.txt', header = T)
 lingLocation <- read.table('lingLocation.txt', header = T)
 load("question_data.RData")
+View(quest.use)
 
+# Remove rows with missing latitude and longitude. For the working dataset, 
+# also remove ID, city, state, and zip since we use lat and long
 sum(is.na(lingData[,5:73]))
-sum(is.na(lingLocation))
 no.na.in.row <- !rowSums(is.na(lingData[,5:73]))
 lingData2 <- lingData[no.na.in.row,]
 nrow(lingData2)+sum(!no.na.in.row)-nrow(lingData)
-ling.data.stripped <- lingData2[,-c(1:4)]
+is.0 <- lingData2[,5:71] == 0
+count.0.in.row <- rowSums(is.0)
+lingData2 <- lingData2[count.0.in.row < 20,]
+lat.and.long <- lingData2[,72:73]
+ling.data.stripped <- lingData2[,-c(1:4, 72:73)]
 
-# lingData has a column for each question, and lingLocation has a column
-# for each question x answer.  Sorry the columns in lingLocation are not usefully named,
-# but it's not too tricky to figure out which is which.
-# Note that you still need to clean this data (check for NA's, missing location data, etc.)
-names(lingData)
-names(lingLocation)
+# See how much of the original data we lose by removing rows in this manner
+1-nrow(ling.data.stripped)/nrow(lingData)
+
+binary.matrix <- apply(ling.data.stripped, 2, function(x) model.matrix(~factor(x)))
+binary.matrix <- data.frame(binary.matrix)
+intercept_indices <- which(colSums(binary.matrix)==nrow(binary.matrix))
+binary.matrix <- binary.matrix[,-intercept_indices]
+
+language_pca <- prcomp(binary.matrix, center = TRUE, scale. = FALSE)
+summary(language_pca)
+
+principal_components <- data.matrix(binary.matrix) %*% language_pca$rotation[,1:3]
+principal_components <- data.frame(principal_components)
+
+cumulative.var <- cumsum(language_pca$sdev ^ 2) / sum(language_pca$sdev ^ 2)
+ggplot(data=NULL, aes(x=1:length(cumulative.var), y=cumulative.var)) +
+  geom_point(size=1) + geom_line()+xlab('Number of Principal Components')+ylab('Cumulative Percentage of Variance')
+
+pca.plot.12 <- ggplot(principal_components, aes(x=PC1, y=PC2)) + 
+  geom_point(color='black', size = 1, alpha = .5)+xlab("First Principal Component")+ylab("Second Principal Component")+
+  ggtitle("Projection onto First Two Principal Components")
+pca.plot.12
+
+pca.plot.13 <- ggplot(principal_components, aes(x=PC1, y=PC3)) + 
+  geom_point(color='black', size = 1, alpha = .5)+xlab("First Principal Component")+ylab("Third Principal Component")+
+  ggtitle("Projection onto Principal Components 1 and 3")
+pca.plot.13
+
+pca.plot.23 <- ggplot(principal_components, aes(x=PC2, y=PC3)) + 
+  geom_point(color='black', size = 1, alpha = .5)+xlab("Second Principal Component")+ylab("Third Principal Component")+
+  ggtitle("Projection onto Principal Components 2 and 3")
+pca.plot.23
+
+plot3d(principal_components$PC1, principal_components$PC2, principal_components$PC3, col="blue", size=1)
+
 state.df <- map_data("state")
 
 blank.theme <-
@@ -137,32 +176,67 @@ blank.theme <-
         panel.grid.minor = element_blank(),
         panel.border = element_blank()) 
 
-############
-# Make a plot similar to the website for the second person plural answers.
-# You may want to join these data sets more efficiently than this.
-plural.second.person <- filter(lingData, Q050 %in% c(6), long > -125)
-answers.q50 <- all.ans[['50']]
+k.means.3.clusters <- kmeans(principal_components, 3)
+principal_components_clustered_3 <- cbind(principal_components,k.means.3.clusters$cluster, lat.and.long)
+colnames(principal_components_clustered_3) <- c(colnames(principal_components), "cluster", colnames(lat.and.long))
+principal_components_clustered_3 <- principal_components_clustered_3[principal_components_clustered_3$long>-125,]
 
-# Make the column to join on.  They must be the same type.
-answers.q50$Q050 <- rownames(answers.q50)
-plural.second.person$Q050 <- as.character(plural.second.person$Q050)
-plural.second.person <- inner_join(plural.second.person, answers.q50, by="Q050")
-
-# Plot!
 ggplot(data=NULL) +
-  geom_point(data=plural.second.person, aes(x=long, y=lat, color=ans), size=3, alpha=0.5) +
-  geom_polygon(data=state.df, colour = "black", fill = NA, aes(x=long, y=lat, group=group)) +
-  blank.theme
+  geom_point(data = principal_components_clustered_3, aes(x=long, y=lat, color=factor(cluster)), size=2, alpha=0.5) +
+  geom_polygon(data=state.df, colour = "black", fill = NA, aes(x=long, y=lat, group = group)) +
+  blank.theme 
 
+k.means.4.clusters <- kmeans(principal_components, 4)
+principal_components_clustered_4 <- cbind(principal_components,k.means.4.clusters$cluster, lat.and.long)
+colnames(principal_components_clustered_4) <- c(colnames(principal_components), "cluster", colnames(lat.and.long))
+principal_components_clustered_4 <- principal_components_clustered_4[principal_components_clustered_4$long>-125,]
 
+plot3d(principal_components_clustered_3$PC1, principal_components_clustered_3$PC2, principal_components_clustered_3$PC3, size=1, xlab= 'First Principal Component'
+       , ylab='Second Principal Component', zlab = 'Third Principal Component')
 
-###############
-# Plot the lingLocation data (which lives on a grid).  Note that this doesn't look great with
-# state outlines.  You can probably do better!
 ggplot(data=NULL) +
-  geom_tile(data=filter(lingLocation, Longitude > -125),
-            aes(x=Longitude, y=Latitude, color=log10(V12), fill=log10(V12))) +
-  geom_polygon(data=state.df, colour = "gray", fill = NA, aes(x=long, y=lat, group=group)) +
-  blank.theme
+  geom_point(data = principal_components_clustered_4, aes(x=long, y=lat, color=factor(cluster)), size=2, alpha=0.5) +
+  geom_polygon(data=state.df, colour = "black", fill = NA, aes(x=long, y=lat, group = group)) +
+  blank.theme 
 
+pca.plot.12.clustered <- ggplot(principal_components_clustered_3, aes(x=PC1, y=PC2, color=factor(cluster))) + 
+  geom_point(size = 1, alpha = .5)+xlab("First Principal Component")+ylab("Second Principal Component")+
+  ggtitle("Projection onto First Two Principal Components")
+pca.plot.12
+
+pca.plot.13.clustered <- ggplot(principal_components_clustered_3, aes(x=PC1, y=PC3, color=factor(cluster))) + 
+  geom_point(size = 1, alpha = .5)+xlab("First Principal Component")+ylab("Third Principal Component")+
+  ggtitle("Projection onto First and Third Principal Components")
+pca.plot.13
+
+pca.plot.23.clustered <- ggplot(principal_components_clustered_3, aes(x=PC2, y=PC3, color=factor(cluster))) + 
+  geom_point(size = 1, alpha = .5)+xlab("Second Principal Component")+ylab("Third Principal Component")+
+  ggtitle("Projection onto Second and Third Principal Components")
+pca.plot.23
+
+plot3d(principal_components_clustered_3$PC1, principal_components_clustered_3$PC2, principal_components_clustered_3$PC3, size=1, xlab= 'First Principal Component'
+       , ylab='Second Principal Component', zlab = 'Third Principal Component', col = as.integer(principal_components_clustered_3$cluster))
+
+plot3d(A$PC1, A$PC2, A$PC3, size=1, xlab= 'First Principal Component'
+       , ylab='Second Principal Component', zlab = 'Third Principal Component', col = as.integer(A$cluster))
+
+subsample_size <- 10000
+subsample <- sample_n(cbind(binary.matrix, lat.and.long), subsample_size)
+latlongsub <- subsample[,469:470]
+subsample <- subsample[,-c(469:470)]
+pca <- prcomp(subsample, center = TRUE, scale. = FALSE)
+summary(pca)
+
+prin.com <- data.matrix(subsample) %*% pca$rotation[,1:3]
+prin.com <- data.frame(subsample)
+
+clust <- kmeans(prin.com, 3)
+newdata <- cbind(prin.com, clust$cluster, latlongsub)
+colnames(newdata) <- c(colnames(prin.com), "cluster", colnames(latlongsub))
+newdata <- newdata[newdata$long>-125,]
+
+ggplot(data=NULL) +
+  geom_point(data = newdata, aes(x=long, y=lat, color=factor(cluster)), size=2, alpha=0.5) +
+  geom_polygon(data=state.df, colour = "black", fill = NA, aes(x=long, y=lat, group = group)) +
+  blank.theme 
 
