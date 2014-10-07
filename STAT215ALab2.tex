@@ -137,10 +137,7 @@ To investigate Loess smoothing, we fixed the time of day at 10:05 AM and plotted
 \caption{Upper Left: Degree 0 Loess smoother. Upper right: Degree 1 Loess smoother. Bottom: Degree 2 Loess smoother. The second degree smoother produces more consisten results, but the degree one gives similar trends.}
 \end{figure}
 
-
-
 \section{Linguistic Data}
-
 
 \subsection{Data quality and cleaning}
 
@@ -148,12 +145,29 @@ Each row of the data contains a participant's answers and each column correspond
 
 Having the data in categorical form was sufficient for the EDA as it allowed for plotting and tracking how often responses were recorded together. However, further analysis required a transformation into binary variables as described in the lab's prompt. This was accomplished by defining a function based on model.matrix and applying it to each row of the data. The intercept columns were then removed to give a set of 468 binary response variables where a 0 indicates that answer was not chosen and a 1 says the opposite. 
 
-
 \subsection{Exploratory Data Analysis}
 
 Our EDA began with maps of the US overlaid with responses by latitude and longitude. Each point is colored by the responder's answer. For each question only the popular choices were included to prevent overplotting. The included plots correspond to the most important questions as measured by the loadings on the first 3 principal components. These are the plural second person, name for athletic shoes, and name for a water fountain questions. In Figure 3.1, the south is shown to strongly prefer using "y'all" while the rest of the nation favors "you", "you all", or "you guys" with no clear geographical trend among them. Figure 3.2 illustrates the divide in usage of "sneakers" and "tennis shoes." The northeast refers to the shoes in question as sneakers while the remainder of the country uses tennis shoes. In both examples, we see south Florida's behavior mimicking that of the northeast, perhaps as a consequence of the large number of transplants in the region. The final of our EDA plots, Figure 3.3, shows the geographic separation between the terms "water fountain" and "drinking fountain," with "drinking fountain" only being common in parts of the midwest and on the west coast. Considering these plots together, we note that each one defines a group. In fact, these correspond nicely to the clusters output by PCA and K-means. 
 
-To look at the relationship between a pair of questions, we look at the second person plural and shoes questions. 
+To look at the relationship between a pair of questions, we examine the second person plural and shoes questions. We calculated the frequencies of observing pairs of answers together and on their own and then computed the conditional probabilities of observing an answer to one question given the response of the other. To lower the dimensionality, we combined "you", "you all" and "you guys" into the category "you" for these calculations.
+
+\begin{table}
+\caption{Conditonal Probabilities}
+\begin{center}
+  \begin{tabular}{| c | c |}
+    \hline
+    P(TS|You) = .54 & P(Sneakers|You) = .46 \\ \hline
+    P(TS|Y'all) = .73 & P(Sneakers|Y'all) = .27 \\ \hline
+    P(You|TS) = .75 & P(You|Sneakers) = .87 \\ \hline
+    P(Y'all|TSl) = ..25 & P(Y'all|Sneakers) = .13 \\ \hline
+  \end{tabular}
+\end{center}
+\end{table}
+
+From these probabilites we note that people who say sneakers are very unlikley to also say y'all (and vice versa). Since most people across two regions, say some variant of "you", conditioning on it doesn't really refine our ability to predict a person's shoe preference. Conditioning on shoes always suggests a high chance of observing "you" due to the much larger marginal probability of "you" because fewer samples come from the south than the collective rest of the nation.
+
+We can follow a similar procedure to find the conditional probabilities with different combinations of responses for the three questions illustrated in Figures 3.1-3.3. This is a bit more involved since the number of possible combinations increases quickly with the number of questions, so it is an infeasible solution to analyze many questions. Furthermore, the separating the data when we have many questions to consider may lead to abnormally small sample sizes and yield imprecise results. 
+
 \begin{figure}
 \begin{center}
 \includegraphics[scale = .5]{Rplot1.png}
@@ -176,19 +190,18 @@ To look at the relationship between a pair of questions, we look at the second p
 \end{figure}
 
 
-
 \section{Dimension reduction methods}
 
-This is where you discuss and show plots about the results of whatever
-dimension reduction techniques you tried - PCA, hierarchical clustering,
-K-means, random projections, etc.
+With the data expanded into a binary format, we were prepared to perform a PCA. We chose to use the centered analysis after comparing the outcomes of the centered and uncentered computations. In the uncentered case, while the first PC accounted for most of the variance, it gave no information on clusters and was dominated by the projections of the means. Centering gave a more meaningful PC in the context of differentiating amongst points. Scaling was not employed since all variables are on the same units and have the same support. 
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=.3]{/Users/jonathanfischer/STAT215A/cumulativevariance.png}
+\includegraphics[scale=.3]{cumulativevariance.png}
 \end{center}
 \caption{Cumulative variance as a function of the number of principal components.}
 \end{figure}
+
+Figures 4.2-4.4 depict the projections of data onto pairwise combinations of the principal axes for the first three principal components. The left plot in each figure illustrates the projections without cluster annotation while the right sides are colored on the basis of the cluster assigned by K-means with K=3. We see differentiation occurs in the plane defined by the first two principal components with the division characteristic of K-means. The combination of these plots give us an idea of the density of points in PC space and also the spatial relationship of the clusters in this projection. Essentially, it seems the first principal component separates the northeast, while the second further distinguishes the south. Since the midwest/west and south clusters are not differentiated by the first PC, we may expect there to be more geographic overlap between these clusters than the other possible pairs. 
 
 \begin{figure}
 \begin{center}
@@ -216,10 +229,12 @@ K-means, random projections, etc.
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale = .4]{PCA3DScatter.png}
+\includegraphics[scale = .3]{PCA3DScatter.png}
 \caption{Screenshot of projection to first three principal axes with cluster coloring.}
 \end{center}
 \end{figure}
+
+Based on the plots presented in the EDA section, K-means was first run for K=3. The result is Figure 4.6, in which we observe 3 clusters centered in the northeast, south, and midwest/west. The northeast cluster seems fairly dense in regions where it is common, dominating from Pennsylvania to Maine and the Miami region. There is a small overlap between the northeast and south clusters in the Pittsburgh area as well as in Maryland. On the other hand, there is quite a bit of mixing in the lower Great Lakes and Midwest, with Ohio, Indiana, Illinois, and Missouri having many points in both clusters. This aligns with our previous analysis of the discriminative power due to the first PC. The clustering was done using the first 3 PC, accounting for a little over 10 percent of the variance. This seems small, but we found no significant improvement in clustering when more PC's were included.
 
 \begin{figure}
 \begin{center}
@@ -228,6 +243,35 @@ K-means, random projections, etc.
 \caption{Responders mapped onto USA and colored by K-means generated clusters with K=3. We see 3 geographically well-defined clusters--northeast, south, and midwest/west.}
 \end{figure}
 
+Having found three distinct clusters, we tried clustering again with K=4 to see if we could achieve differentiation among the midwest and western regions. Figure 4.7 shows that this fails to occur as members of clusters 3 and 4 are scattered throughout was was previously one cluster with no discernable geographic trend. In fact, even when all PC's were included, the final clusters were the same, so we concluded that the clustering with K=3 was the appropriate choice. 
+
+Additional clustering methods such as EM on Gaussian mixtures and HDP were considered, and the EM algorithm was run using the implementation emcluster in the package EMCluster (see Figure 6.1). Interestingly, even when a mixture of 3 Gaussians was specified, only two clusters had a substantial number of points; these were the northeast/south and midwest/west. This behavior could be due to the the parametric assumptions imposed on the model in the EM treatment or the higher density of points in the west/midwest cluster due to the number of respondents from those areas. An HDP clustering algorithm that could detect the number of clusters (under the constraints of a hyperparameter penalizing the creation of new clusters) was not implemented but it would be interesting to do so. Hiearchical clustering for a suitable distance metric (L1?) could support the hypothesis that the northeast cluster is the 'most different' among the 3 observed.
+
+By noting the greatest components of the eigenvectors of our rotation matrix, we can infer which responses have the largest impact in terms of separating or failing to separate clusters. Included in this list are the three questions discussed previously, and the table below indicates whether they distinguish a region or exhibit a large amount of similarity across regions. Maps for these questions were generated, and are not included in this report due to length limitations. 
+
+\begin{table}
+\caption{Subset of questions/responses and their geographic trends.}
+\begin{center}
+  \begin{tabular}{| c | c | p{5cm}  | p{3cm} |}
+    \hline
+    Question No. & Description & Notes & Discriminative? \\ \hline
+    50 & 2nd Person Plural & Y'all in south, even split among you, you all, you guys elsewhere & Yes \\ \hline
+    56 & Use of anymore & Acceptable in midwest save MN, WI, MI. Lots of mixing in these states, however. & Blurs midwest and south.  \\ \hline
+    68 & Maternal grandmother & Other is widespread but leads in the south. Grandma also very common. Nana only in northeast. & Yes \\ \hline
+    73 & Tennis Shoes/Sneakers & Sneakers in S. FL and northeast from eastern PA through ME. Tennis shoes otherwise. & Yes\\ \hline
+    76 & catty/kitty-corner & Kitty-corner in west and upper midwest as well as NY and New England. Fairly separate. & Yes\\ \hline
+    79 & freeway/highway & Highway almost everywhere. Cities in CA favor freeway. & No\\ \hline
+    89 & coleslaw & Slaw is OK in south into lower midwest. & Continuum in OH, IN, IL \\ \hline
+    98 & by/on accident & By is predominant everywhere. & No \\ \hline
+    99 & road parallel to highway & Large amount of mixing but there is some separation that helps distinguish the midwest and west. & Blurs south with other regions \\ \hline
+    103 & water/drinking fountain & Drinking fountain near great lakes and in the west. Lots of overlap in rust belt and bay area. & Some, but doesn't completely separate midwest. \\ \hline
+    105 & soda/pop/coke & Soda in northeast, coke in south, pop in midwest and pacific NW, soda in CA. & Yes, but doesn't perfectly match clusters \\ \hline
+    106 & term for TP'ing & Higher presence of rolling in south and toilet papering in northeast than elsewhere. & Yes \\ \hline
+    120 & shotgun & Shotgun wins. & No \\ \hline
+  \end{tabular}
+\end{center}
+\end{table}
+
 \begin{figure}
 \begin{center}
 \includegraphics[scale=.5]{pcamap4clusters.png}
@@ -235,30 +279,36 @@ K-means, random projections, etc.
 \caption{Responders mapped onto USA and colored by K-means generated clusters with K=4. The south and northeast clusters remain but two clusters are mixed throughout the west/midwest. This suggests 3 clusters was more appropriate.}
 \end{figure}
 
-
 \begin{verbatim}
-http://youtu.be/-qgCEqmbsO4
-http://youtu.be/FuRNZofyJgs
+Animation of 3D scatterplot of PC: http://youtu.be/-qgCEqmbsO4
+Animation containing maps for all analyzed questions: http://youtu.be/FuRNZofyJgs
 \end{verbatim}
 
 
-
 \section{Stability of findings to perturbation}
+To test whether our finding of 3 distinct regional clusters was stable, we took random subsamples of the data and re-ran the analysis. Each subsample consited of 10000 points and the indices were chosen uniformly. Figure 5.1 displays the resulting plot for one such subsample, which looks like Figure 4.6 but with fewer mapped points and a new color permutation. All subsamples tested produced the same picture, suggesting the clusters are fairly robust. 
+
+Since the linguistic regions arise in Figures 3.1-3.3, we also conducted the entire analysis with only these three questions rather than the full set of 67. We see the outcome in Figure 5.2. This strategy seems to capture the geographic differences somewhat well, though there is more mixing than when the full data are used. This is particularly apparent in Missouri, which has many "southern" respondents in the map using the full data but not many in this realization. This is because not many people chose "y'all" in question 50. The presence of the same three clusters, give or take a few locations, supports the strength of our findings. 
+
+The final test of stability we performed was altering the starting points for K-means. Each time the function is invoked in R, random points are chosen as the starting coordinates for the clusters. We ran K-means several times, allowing it to uniformly select the centers at which to start. In each case, the results were identical once we accounted for permutations of the cluster numbers. Additionally, we ran a simulation with centers at (1,0,0), (0,1,0), (0,0,1). This similary produced the same clustering outputs.
 
 \begin{figure}
-\begin{center}
-\includegraphics[scale=.5]{pcasubsample.png}
-\end{center}
-\caption{The results of PCA and clustering with K=3 with a random subsample of 10000 points. The same geographic clusters arise.}
+\includegraphics[scale=.4]{pcasubsample.png}
+\includegraphics[scale=.4]{pca3questions.png}
+\caption{Left: The results of PCA and clustering with K=3 with a random subsample of 10000 points. The same geographic clusters arise. Right: The results of PCA and clustering with K=3 where the data have been reduced to responses to questions 50 (not y'all/y'all), 73 (sneakers/tennis shoes), and 103 (water/drinking fountain). There is more overlap in the clusters than when the full data are used, but we still see the distinct geographic pattern.}
 \end{figure}
 
-\begin{figure}
-\begin{center}
-\includegraphics[scale=.5]{pca3questions.png}
-\end{center}
-\caption{The results of PCA and clustering with K=3 where the data have been reduced to responses to questions 50 (not y'all/y'all), 73 (sneakers/tennis shoes), and 103 (water/drinking fountain). There is more overlap in the clusters than when the full data are used, but we still see the distinct geographic pattern.}
-\end{figure}
 
 
 \section{Conclusion}
+This report discussed the impact of smoothing parameters on kernel density estimation and Loess smoothing, supporting the theorectical result that increasing bandwidth decreases variance but increases bias while decreasing bandwidth does the opposite. In our second component, we cleaned and analyzed dialect survey data consisting of 67 questions answered by 47471 participants. Our work suggests three separate linguistic clusters based on lexical differences, geographically centered in the northeast, south, and combination of the midwest/west. These findings are stable under the perturbation analyses performed, though the failure of the Gaussian mixture model using EM would be interesting to investigate. We were surprised to see the discriminative power of the first few PC given their small cumulative proportion of the variance, but adding more PCs did not alter the clusters. Given our anecdotal experience, we anticipated differentiation among the northeast, south, and midwest. Conversely, it was unexpected to see the west and midwest grouped into one cluster, though the maps for many questions bore this out upon examination. 
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=.5]{EMclusters.png}
+\end{center}
+\caption{The results of PCA and clustering with EM Gaussian mixture model and 3 clusters. We see only two clusters really arise as the northeast and south have been merged.}
+\end{figure}
+
+
 \end{document}
