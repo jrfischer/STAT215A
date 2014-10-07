@@ -7,10 +7,7 @@ library(dplyr)
 library(reshape2)
 library(gridExtra)
 library(animation)
-library(EMCluster)
-library(DPpackage)
 library(rgl)
-library(iplots)
 
 # Part 1: Redwood Data Smoothing
 
@@ -150,9 +147,11 @@ cumulative.var <- cumsum(language_pca$sdev ^ 2) / sum(language_pca$sdev ^ 2)
 ggplot(data=NULL, aes(x=1:length(cumulative.var), y=cumulative.var)) +
   geom_point(size=1) + geom_line()+xlab('Number of Principal Components')+ylab('Cumulative Percentage of Variance')
 
+# Plot pairwise projections to PC
+
 pca.plot.12 <- ggplot(principal_components, aes(x=PC1, y=PC2)) + 
   geom_point(color='black', size = 1, alpha = .5)+xlab("First Principal Component")+ylab("Second Principal Component")+
-  ggtitle("Projection onto First Two Principal Components")
+  ggtitle("Projection via Principal Components 1 and 2")
 pca.plot.12
 
 pca.plot.13 <- ggplot(principal_components, aes(x=PC1, y=PC3)) + 
@@ -186,57 +185,129 @@ ggplot(data=NULL) +
   geom_polygon(data=state.df, colour = "black", fill = NA, aes(x=long, y=lat, group = group)) +
   blank.theme 
 
+pca.plot.12.clustered <- ggplot(principal_components_clustered_3, aes(x=PC1, y=PC2, color=factor(cluster))) + 
+  geom_point(size = 1, alpha = .5)+xlab("First Principal Component")+ylab("Second Principal Component")+
+  ggtitle("Projection via First and Second Principal Components")
+pca.plot.12.clustered
+
+pca.plot.13.clustered <- ggplot(principal_components_clustered_3, aes(x=PC1, y=PC3, color=factor(cluster))) + 
+  geom_point(size = 1, alpha = .5)+xlab("First Principal Component")+ylab("Third Principal Component")+
+  ggtitle("Projection via First and Third Principal Components")
+pca.plot.13.clustered
+
+pca.plot.23.clustered <- ggplot(principal_components_clustered_3, aes(x=PC2, y=PC3, color=factor(cluster))) + 
+  geom_point(size = 1, alpha = .5)+xlab("Second Principal Component")+ylab("Third Principal Component")+
+  ggtitle("Projection via Second and Third Principal Components")
+pca.plot.23.clustered
+
+plot3d(principal_components_clustered_3$PC1, principal_components_clustered_3$PC2, principal_components_clustered_3$PC3, size=1, xlab= 'First Principal Component'
+       , ylab='Second Principal Component', zlab = 'Third Principal Component', col = principal_components_clustered_3$cluster)
+
 k.means.4.clusters <- kmeans(principal_components, 4)
 principal_components_clustered_4 <- cbind(principal_components,k.means.4.clusters$cluster, lat.and.long)
 colnames(principal_components_clustered_4) <- c(colnames(principal_components), "cluster", colnames(lat.and.long))
 principal_components_clustered_4 <- principal_components_clustered_4[principal_components_clustered_4$long>-125,]
-
-plot3d(principal_components_clustered_3$PC1, principal_components_clustered_3$PC2, principal_components_clustered_3$PC3, size=1, xlab= 'First Principal Component'
-       , ylab='Second Principal Component', zlab = 'Third Principal Component')
 
 ggplot(data=NULL) +
   geom_point(data = principal_components_clustered_4, aes(x=long, y=lat, color=factor(cluster)), size=2, alpha=0.5) +
   geom_polygon(data=state.df, colour = "black", fill = NA, aes(x=long, y=lat, group = group)) +
   blank.theme 
 
-pca.plot.12.clustered <- ggplot(principal_components_clustered_3, aes(x=PC1, y=PC2, color=factor(cluster))) + 
-  geom_point(size = 1, alpha = .5)+xlab("First Principal Component")+ylab("Second Principal Component")+
-  ggtitle("Projection onto First Two Principal Components")
-pca.plot.12
-
-pca.plot.13.clustered <- ggplot(principal_components_clustered_3, aes(x=PC1, y=PC3, color=factor(cluster))) + 
-  geom_point(size = 1, alpha = .5)+xlab("First Principal Component")+ylab("Third Principal Component")+
-  ggtitle("Projection onto First and Third Principal Components")
-pca.plot.13
-
-pca.plot.23.clustered <- ggplot(principal_components_clustered_3, aes(x=PC2, y=PC3, color=factor(cluster))) + 
-  geom_point(size = 1, alpha = .5)+xlab("Second Principal Component")+ylab("Third Principal Component")+
-  ggtitle("Projection onto Second and Third Principal Components")
-pca.plot.23
-
-plot3d(principal_components_clustered_3$PC1, principal_components_clustered_3$PC2, principal_components_clustered_3$PC3, size=1, xlab= 'First Principal Component'
-       , ylab='Second Principal Component', zlab = 'Third Principal Component', col = as.integer(principal_components_clustered_3$cluster))
-
-plot3d(A$PC1, A$PC2, A$PC3, size=1, xlab= 'First Principal Component'
-       , ylab='Second Principal Component', zlab = 'Third Principal Component', col = as.integer(A$cluster))
-
 subsample_size <- 10000
 subsample <- sample_n(cbind(binary.matrix, lat.and.long), subsample_size)
 latlongsub <- subsample[,469:470]
 subsample <- subsample[,-c(469:470)]
-pca <- prcomp(subsample, center = TRUE, scale. = FALSE)
-summary(pca)
+pca_sub <- prcomp(subsample, center = TRUE, scale. = FALSE)
+summary(pca_sub)
 
-prin.com <- data.matrix(subsample) %*% pca$rotation[,1:3]
-prin.com <- data.frame(subsample)
+principal.components.sub <- data.matrix(subsample) %*% pca_sub$rotation[,1:3]
+principal.components.sub <- data.frame(principal.components.sub)
 
-clust <- kmeans(prin.com, 3)
-newdata <- cbind(prin.com, clust$cluster, latlongsub)
-colnames(newdata) <- c(colnames(prin.com), "cluster", colnames(latlongsub))
-newdata <- newdata[newdata$long>-125,]
+kmeans.3.clusters.subsample <- kmeans(principal.components.sub, 3)
+language_subsample <- cbind(principal.components.sub, kmeans.3.clusters.subsample$cluster, latlongsub)
+colnames(language_subsample) <- c(colnames(principal.components.sub), "cluster", colnames(latlongsub))
+language_subsample <- language_subsample[language_subsample$long>-125,]
 
 ggplot(data=NULL) +
-  geom_point(data = newdata, aes(x=long, y=lat, color=factor(cluster)), size=2, alpha=0.5) +
+  geom_point(data = language_subsample, aes(x=long, y=lat, color=factor(cluster)), size=2, alpha=0.5) +
   geom_polygon(data=state.df, colour = "black", fill = NA, aes(x=long, y=lat, group = group)) +
   blank.theme 
+
+cutoff <- .3
+absolute.loadings <- data.frame(abs(language_pca$rotation[,1:3]))
+absolute.loadings$importance <- rowSums(absolute.loadings)
+sum(absolute.loadings$importance > cutoff)
+questions_to_examine <- which(absolute.loadings$importance > cutoff)
+
+# Repeats PCA and K-means clustering for data containing only questions 50, 73, and 103
+# Q050 - you/y'all, Q073 - tennis shoes/sneakers, Q103 - water/drinking fountain
+cross.question.comparison <- filter(lingData2, Q050 %in% c(1,4,7,9), Q073 %in% c(1,6), Q103 %in% c(3,4),  long > -125)
+cross.question.comparison <- select(cross.question.comparison, Q050, Q073, Q103, lat, long)
+not.yall <- which(cross.question.comparison$Q050 !=9)
+cross.question.comparison[c(not.yall), 1] <- 1
+lat.long.cross <- cross.question.comparison[,c(4,5)]
+cross.question.comparison <- cross.question.comparison[,-c(4,5)]
+cross.matrix <- apply(cross.question.comparison, 2, function(x) model.matrix(~factor(x)-1))
+cross.matrix <- data.frame(cross.matrix)
+cross_pca <- prcomp(cross.matrix, center = TRUE, scale. = FALSE)
+principal_components_cross <- data.matrix(cross.matrix) %*% cross_pca$rotation[,1:3]
+principal_components_cross <- data.frame(principal_components_cross)
+cumulative.var <- cumsum(cross_pca$sdev ^ 2) / sum(cross_pca$sdev ^ 2)
+ggplot(data=NULL, aes(x=1:length(cumulative.var), y=cumulative.var)) +
+  geom_point(size=1) + geom_line()+xlab('Number of Principal Components')+ylab('Cumulative Percentage of Variance')
+k.means.cross <- kmeans(principal_components_cross, 3)
+principal_components_cross_cluster <- cbind(principal_components_cross,k.means.cross$cluster, lat.long.cross)
+colnames(principal_components_cross_cluster) <- c(colnames(principal_components_cross), "cluster", colnames(lat.and.long))
+principal_components_cross_cluster <- principal_components_cross_cluster[principal_components_cross_cluster$long>-125,]
+ggplot(data=NULL) +
+  geom_point(data = principal_components_cross_cluster, aes(x=long, y=lat, color=factor(cluster)), size=2, alpha=0.5) +
+  geom_polygon(data=state.df, colour = "black", fill = NA, aes(x=long, y=lat, group = group)) +
+  blank.theme 
+
+observations <- nrow(cross.question.comparison)
+notyall.percentage <- sum(cross.question.comparison$Q050 == 1)/observations
+yall.percentage <- sum(cross.question.comparison$Q050 == 9)/observations
+sneakers.percentage <- sum(cross.question.comparison$Q073 == 1)/observations
+tennis.shoes.percentage <- sum(cross.question.comparison$Q073 == 6)/observations
+drinking.fountain.percentage <- sum(cross.question.comparison$Q103 == 3)/observations
+water.fountain.percentage <- sum(cross.question.comparison$Q103 == 4)/observations
+
+you.or.yall <- c(notyall.percentage, yall.percentage)
+sneakers.or.tennis.shoes <- c(sneakers.percentage, tennis.shoes.percentage)
+drinking.or.water <- c(drinking.fountain.percentage, water.fountain.percentage)
+
+notyall.sneakers <- sum(cross.question.comparison$Q050 == 1 & cross.question.comparison$Q073 == 1)/observations
+notyall.tennis.shoes <- sum(cross.question.comparison$Q050 == 1 & cross.question.comparison$Q073 == 6)/observations
+notyall.drinking.fountain <- sum(cross.question.comparison$Q050 == 1 & cross.question.comparison$Q103 == 3)/observations
+notyall.water.fountain <- sum(cross.question.comparison$Q050 == 1 & cross.question.comparison$Q103 == 4)/observations
+yall.sneakers <- sum(cross.question.comparison$Q050 == 9 & cross.question.comparison$Q073 == 1)/observations
+yall.tennis.shoes <- sum(cross.question.comparison$Q050 == 9 & cross.question.comparison$Q073 == 6)/observations
+yall.drinking.fountain <- sum(cross.question.comparison$Q050 == 9 & cross.question.comparison$Q103 == 3)/observations
+yall.water.fountain <- sum(cross.question.comparison$Q050 == 9 & cross.question.comparison$Q103 == 4)/observations
+sneakers.drinking.fountain <- sum(cross.question.comparison$Q073 == 1 & cross.question.comparison$Q103 == 3)/observations
+sneakers.water.fountain <- sum(cross.question.comparison$Q073 == 1 & cross.question.comparison$Q103 == 4)/observations
+tennis.shoes.drinking.fountain <- sum(cross.question.comparison$Q073 == 6 & cross.question.comparison$Q103 == 3)/observations
+tennis.shoes.water.fountain <- sum(cross.question.comparison$Q073 == 6 & cross.question.comparison$Q103 == 4)/observations
+
+notyall.sneakers.drinking.fountain <- sum(cross.question.comparison$Q050 == 1 & cross.question.comparison$Q073 == 1 & cross.question.comparison$Q103 == 3)/observations
+notyall.sneakers.water.fountain <- sum(cross.question.comparison$Q050 == 1 & cross.question.comparison$Q073 == 1 & cross.question.comparison$Q103 == 4)/observations
+notyall.tennis.shoes.drinking.fountain <- sum(cross.question.comparison$Q050 == 1 & cross.question.comparison$Q073 == 6 & cross.question.comparison$Q103 == 3)/observations
+notyall.tennis.shoes.water.fountain <- sum(cross.question.comparison$Q050 == 1 & cross.question.comparison$Q073 == 6 & cross.question.comparison$Q103 == 4)/observations
+yall.sneakers.drinking.fountain <- sum(cross.question.comparison$Q050 == 9 & cross.question.comparison$Q073 == 1 & cross.question.comparison$Q103 == 3)/observations
+yall.sneakers.water.fountain <- sum(cross.question.comparison$Q050 == 9 & cross.question.comparison$Q073 == 1 & cross.question.comparison$Q103 == 4)/observations
+yall.tennis.shoes.drinking.fountain <- sum(cross.question.comparison$Q050 == 9 & cross.question.comparison$Q073 == 6 & cross.question.comparison$Q103 == 3)/observations
+yall.tennis.shoes.water.fountain <- sum(cross.question.comparison$Q050 == 9 & cross.question.comparison$Q073 == 6 & cross.question.comparison$Q103 == 4)/observations
+
+joint3.probabilities <- c(notyall.sneakers.drinking.fountain, notyall.sneakers.water.fountain, notyall.tennis.shoes.drinking.fountain, notyall.tennis.shoes.water.fountain,
+                          yall.sneakers.drinking.fountain, yall.sneakers.water.fountain, yall.tennis.shoes.drinking.fountain, yall.tennis.shoes.water.fountain)
+
+joint.you.shoes <- matrix(c(notyall.sneakers, notyall.tennis.shoes, yall.sneakers, yall.tennis.shoes), nrow=2, ncol=2)
+joint.you.fountain <- matrix(c(notyall.drinking.fountain, notyall.water.fountain, yall.drinking.fountain, yall.water.fountain), nrow=2, ncol=2)
+joint.shoes.fountain <- matrix(c(sneakers.drinking.fountain, sneakers.water.fountain, tennis.shoes.drinking.fountain, tennis.shoes.water.fountain), nrow=2, ncol=2)
+rownames(joint.you.shoes) <- c('Sneakers', 'Tennis Shoes')
+colnames(joint.you.shoes) <- c('You, You guys, You all', 'Yall')
+rownames(joint.you.fountain) <- c('Drinking fountain', 'Water fountain')
+colnames(joint.you.fountain) <- c('You, You guys, You all', 'Yall')
+rownames(joint.shoes.fountain) <- c('Sneakers', 'Tennis Shoes')
+colnames(joint.shoes.fountain) <- c('Drinking fountain', 'Water fountain')
 
