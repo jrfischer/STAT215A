@@ -145,7 +145,8 @@ principal_components <- data.frame(principal_components)
 
 cumulative.var <- cumsum(language_pca$sdev ^ 2) / sum(language_pca$sdev ^ 2)
 ggplot(data=NULL, aes(x=1:length(cumulative.var), y=cumulative.var)) +
-  geom_point(size=1) + geom_line()+xlab('Number of Principal Components')+ylab('Cumulative Percentage of Variance')
+  geom_point(size=1) + geom_line()+xlab('Number of Principal Components')+ylab('Cumulative Percentage of Variance')+
+  ggtitle('Cumulative Percentage of Variance vs Number of Principal Components')
 
 # Plot pairwise projections to PC
 
@@ -298,8 +299,9 @@ yall.sneakers.water.fountain <- sum(cross.question.comparison$Q050 == 9 & cross.
 yall.tennis.shoes.drinking.fountain <- sum(cross.question.comparison$Q050 == 9 & cross.question.comparison$Q073 == 6 & cross.question.comparison$Q103 == 3)/observations
 yall.tennis.shoes.water.fountain <- sum(cross.question.comparison$Q050 == 9 & cross.question.comparison$Q073 == 6 & cross.question.comparison$Q103 == 4)/observations
 
-joint3.probabilities <- c(notyall.sneakers.drinking.fountain, notyall.sneakers.water.fountain, notyall.tennis.shoes.drinking.fountain, notyall.tennis.shoes.water.fountain,
-                          yall.sneakers.drinking.fountain, yall.sneakers.water.fountain, yall.tennis.shoes.drinking.fountain, yall.tennis.shoes.water.fountain)
+joint.all <- array(c(notyall.sneakers.drinking.fountain, notyall.sneakers.water.fountain, notyall.tennis.shoes.drinking.fountain, notyall.tennis.shoes.water.fountain,
+                     yall.sneakers.drinking.fountain, yall.sneakers.water.fountain, yall.tennis.shoes.drinking.fountain, yall.tennis.shoes.water.fountain), dim = c(2,2,2)
+                   )
 
 joint.you.shoes <- matrix(c(notyall.sneakers, notyall.tennis.shoes, yall.sneakers, yall.tennis.shoes), nrow=2, ncol=2)
 joint.you.fountain <- matrix(c(notyall.drinking.fountain, notyall.water.fountain, yall.drinking.fountain, yall.water.fountain), nrow=2, ncol=2)
@@ -310,4 +312,7 @@ rownames(joint.you.fountain) <- c('Drinking fountain', 'Water fountain')
 colnames(joint.you.fountain) <- c('You, You guys, You all', 'Yall')
 rownames(joint.shoes.fountain) <- c('Sneakers', 'Tennis Shoes')
 colnames(joint.shoes.fountain) <- c('Drinking fountain', 'Water fountain')
+
+shoes.conditioned.on.you <- rbind(joint.you.shoes[,1]/you.or.yall[1], joint.you.shoes[,2]/you.or.yall[2])
+you.conditioned.on.shoes <- cbind(joint.you.shoes[1,]/sneakers.or.tennis.shoes[1], joint.you.shoes[2,]/sneakers.or.tennis.shoes[2])
 
