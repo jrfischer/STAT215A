@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  6 OCT 2014 23:18
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  7 OCT 2014 02:03
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -291,75 +291,159 @@ Package geometry Warning: The marginal notes overrun the paper.
 File: Temperature_Density_Biweight_Kernel.png Graphic file (type png)
 <use Temperature_Density_Biweight_Kernel.png>
 Package pdftex.def Info: Temperature_Density_Biweight_Kernel.png used on input 
-line 108.
+line 113.
 (pdftex.def)             Requested size: 192.71658pt x 192.71658pt.
 <Temperature_Density_Epanechnikov_Kernel.png, id=3, 481.8pt x 481.8pt>
 File: Temperature_Density_Epanechnikov_Kernel.png Graphic file (type png)
 <use Temperature_Density_Epanechnikov_Kernel.png>
 Package pdftex.def Info: Temperature_Density_Epanechnikov_Kernel.png used on in
-put line 109.
+put line 114.
 (pdftex.def)             Requested size: 192.71658pt x 192.71658pt.
 <Temperature_Density_Guassian_Kernel.png, id=4, 481.8pt x 481.8pt>
 File: Temperature_Density_Guassian_Kernel.png Graphic file (type png)
 <use Temperature_Density_Guassian_Kernel.png>
 Package pdftex.def Info: Temperature_Density_Guassian_Kernel.png used on input 
-line 113.
+line 118.
 (pdftex.def)             Requested size: 192.71658pt x 192.71658pt.
 <Temperature_Density_Rectangular_Kernel.png, id=5, 481.8pt x 481.8pt>
 File: Temperature_Density_Rectangular_Kernel.png Graphic file (type png)
 <use Temperature_Density_Rectangular_Kernel.png>
 Package pdftex.def Info: Temperature_Density_Rectangular_Kernel.png used on inp
-ut line 114.
+ut line 119.
 (pdftex.def)             Requested size: 192.71658pt x 192.71658pt.
 <Humidity_Temperature_Loess_0.png, id=6, 481.8pt x 481.8pt>
 File: Humidity_Temperature_Loess_0.png Graphic file (type png)
 <use Humidity_Temperature_Loess_0.png>
-Package pdftex.def Info: Humidity_Temperature_Loess_0.png used on input line 12
-3.
+Package pdftex.def Info: Humidity_Temperature_Loess_0.png used on input line 13
+0.
 (pdftex.def)             Requested size: 192.71658pt x 192.71658pt.
 <Humidity_Temperature_Loess_1.png, id=7, 481.8pt x 481.8pt>
 File: Humidity_Temperature_Loess_1.png Graphic file (type png)
 <use Humidity_Temperature_Loess_1.png>
-Package pdftex.def Info: Humidity_Temperature_Loess_1.png used on input line 12
-4.
+Package pdftex.def Info: Humidity_Temperature_Loess_1.png used on input line 13
+1.
 (pdftex.def)             Requested size: 192.71658pt x 192.71658pt.
 <Humidity_Temperature_Loess_2.png, id=8, 481.8pt x 481.8pt>
 File: Humidity_Temperature_Loess_2.png Graphic file (type png)
 <use Humidity_Temperature_Loess_2.png>
-Package pdftex.def Info: Humidity_Temperature_Loess_2.png used on input line 12
-8.
+Package pdftex.def Info: Humidity_Temperature_Loess_2.png used on input line 13
+5.
 (pdftex.def)             Requested size: 192.71658pt x 192.71658pt.
-LaTeX Font Info:    Try loading font information for T1+cmtt on input line 158.
-
-(/usr/local/texlive/2013/texmf-dist/tex/latex/base/t1cmtt.fd
-File: t1cmtt.fd 1999/05/25 v2.5h Standard LaTeX font definitions
-) [1
+[1
 
 {/usr/local/texlive/2013/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2 <./T
 emperature_Density_Biweight_Kernel.png> <./Temperature_Density_Epanechnikov_Ker
 nel.png> <./Temperature_Density_Guassian_Kernel.png> <./Temperature_Density_Rec
 tangular_Kernel.png>] [3 <./Humidity_Temperature_Loess_0.png> <./Humidity_Tempe
-rature_Loess_1.png> <./Humidity_Temperature_Loess_2.png>] (./STAT215ALab2.aux) 
-) 
+rature_Loess_1.png> <./Humidity_Temperature_Loess_2.png>] <Rplot1.png, id=32, 7
+39.76375pt x 477.785pt>
+File: Rplot1.png Graphic file (type png)
+<use Rplot1.png>
+Package pdftex.def Info: Rplot1.png used on input line 159.
+(pdftex.def)             Requested size: 369.88097pt x 238.8919pt.
+<Rplot2.png, id=33, 739.76375pt x 477.785pt>
+File: Rplot2.png Graphic file (type png)
+<use Rplot2.png>
+Package pdftex.def Info: Rplot2.png used on input line 166.
+(pdftex.def)             Requested size: 369.88097pt x 238.8919pt.
+<Rplot3.png, id=34, 739.76375pt x 477.785pt>
+File: Rplot3.png Graphic file (type png)
+<use Rplot3.png>
+Package pdftex.def Info: Rplot3.png used on input line 173.
+(pdftex.def)             Requested size: 369.88097pt x 238.8919pt.
+
+</Users/jonathanfischer/STAT215A/cumulativevariance.png, id=35, 715.67375pt x 4
+77.785pt>
+File: /Users/jonathanfischer/STAT215A/cumulativevariance.png Graphic file (type
+ png)
+<use /Users/jonathanfischer/STAT215A/cumulativevariance.png>
+Package pdftex.def Info: /Users/jonathanfischer/STAT215A/cumulativevariance.png
+ used on input line 188.
+(pdftex.def)             Requested size: 214.70378pt x 143.3366pt.
+<PCA12bw.png, id=36, 715.67375pt x 477.785pt>
+File: PCA12bw.png Graphic file (type png)
+<use PCA12bw.png>
+Package pdftex.def Info: PCA12bw.png used on input line 195.
+(pdftex.def)             Requested size: 214.70378pt x 143.3366pt.
+<PCA12c.png, id=37, 715.67375pt x 477.785pt>
+File: PCA12c.png Graphic file (type png)
+<use PCA12c.png>
+Package pdftex.def Info: PCA12c.png used on input line 196.
+(pdftex.def)             Requested size: 214.70378pt x 143.3366pt.
+<PCA13bw.png, id=38, 715.67375pt x 477.785pt>
+File: PCA13bw.png Graphic file (type png)
+<use PCA13bw.png>
+Package pdftex.def Info: PCA13bw.png used on input line 203.
+(pdftex.def)             Requested size: 214.70378pt x 143.3366pt.
+<PCA13c.png, id=39, 715.67375pt x 477.785pt>
+File: PCA13c.png Graphic file (type png)
+<use PCA13c.png>
+Package pdftex.def Info: PCA13c.png used on input line 204.
+(pdftex.def)             Requested size: 214.70378pt x 143.3366pt.
+<PCA23bw.png, id=40, 715.67375pt x 477.785pt>
+File: PCA23bw.png Graphic file (type png)
+<use PCA23bw.png>
+Package pdftex.def Info: PCA23bw.png used on input line 211.
+(pdftex.def)             Requested size: 214.70378pt x 143.3366pt.
+<PCA23c.png, id=41, 715.67375pt x 477.785pt>
+File: PCA23c.png Graphic file (type png)
+<use PCA23c.png>
+Package pdftex.def Info: PCA23c.png used on input line 212.
+(pdftex.def)             Requested size: 214.70378pt x 143.3366pt.
+<PCA3DScatter.png, id=42, 581.17125pt x 505.89pt>
+File: PCA3DScatter.png Graphic file (type png)
+<use PCA3DScatter.png>
+Package pdftex.def Info: PCA3DScatter.png used on input line 219.
+(pdftex.def)             Requested size: 232.46437pt x 202.3524pt.
+<clusters.png, id=43, 715.67375pt x 477.785pt>
+File: clusters.png Graphic file (type png)
+<use clusters.png>
+Package pdftex.def Info: clusters.png used on input line 226.
+(pdftex.def)             Requested size: 357.836pt x 238.8919pt.
+<pcamap4clusters.png, id=44, 715.67375pt x 477.785pt>
+File: pcamap4clusters.png Graphic file (type png)
+<use pcamap4clusters.png>
+Package pdftex.def Info: pcamap4clusters.png used on input line 233.
+(pdftex.def)             Requested size: 357.836pt x 238.8919pt.
+LaTeX Font Info:    Try loading font information for T1+cmtt on input line 239.
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/base/t1cmtt.fd
+File: t1cmtt.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+) <pcasubsample.png, id=45, 715.67375pt x 477.785pt>
+File: pcasubsample.png Graphic file (type png)
+<use pcasubsample.png>
+Package pdftex.def Info: pcasubsample.png used on input line 250.
+(pdftex.def)             Requested size: 357.836pt x 238.8919pt.
+<pca3questions.png, id=46, 715.67375pt x 477.785pt>
+File: pca3questions.png Graphic file (type png)
+<use pca3questions.png>
+Package pdftex.def Info: pca3questions.png used on input line 257.
+(pdftex.def)             Requested size: 357.836pt x 238.8919pt.
+[4] [5 <./Rplot1.png> <./Rplot2.png>] [6 <./Rplot3.png> </Users/jonathanfischer
+/STAT215A/cumulativevariance.png>] [7 <./PCA12bw.png> <./PCA12c.png> <./PCA13bw
+.png> <./PCA13c.png> <./PCA23bw.png> <./PCA23c.png>] [8 <./PCA3DScatter.png> <.
+/clusters.png>] [9 <./pcamap4clusters.png> <./pcasubsample.png>] [10 <./pca3que
+stions.png>] (./STAT215ALab2.aux) ) 
 Here is how much of TeX's memory you used:
- 3578 strings out of 493315
- 48782 string characters out of 6137904
- 120956 words of memory out of 5000000
- 6952 multiletter control sequences out of 15000+600000
+ 3654 strings out of 493315
+ 50202 string characters out of 6137904
+ 128956 words of memory out of 5000000
+ 7012 multiletter control sequences out of 15000+600000
  11977 words of font info for 33 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 38i,7n,43p,238b,278s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2013/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}<
-/usr/local/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></u
-sr/local/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr
-/local/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/l
-ocal/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/loc
-al/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb></usr/local
-/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb>
-Output written on STAT215ALab2.pdf (3 pages, 394215 bytes).
+ 38i,8n,43p,1396b,278s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2013/texmf-dist/fonts/en
+c/dvips/cm-super/cm-super-t1.enc}</usr/local/texlive/2013/texmf-dist/fonts/type
+1/public/cm-super/sfbx1200.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/
+public/cm-super/sfbx1440.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/pu
+blic/cm-super/sfrm1000.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/publ
+ic/cm-super/sfrm1200.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public
+/cm-super/sfrm1728.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/c
+m-super/sftt1000.pfb>
+Output written on STAT215ALab2.pdf (10 pages, 2896531 bytes).
 PDF statistics:
- 54 PDF objects out of 1000 (max. 8388607)
- 28 compressed objects within 1 object stream
+ 106 PDF objects out of 1000 (max. 8388607)
+ 44 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 36 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 111 words of extra memory for PDF output out of 10000 (max. 10000000)
 

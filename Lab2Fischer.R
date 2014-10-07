@@ -8,6 +8,7 @@ library(reshape2)
 library(gridExtra)
 library(animation)
 library(rgl)
+library(animation)
 
 # Part 1: Redwood Data Smoothing
 
